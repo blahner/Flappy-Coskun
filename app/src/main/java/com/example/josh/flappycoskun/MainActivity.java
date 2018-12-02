@@ -1,11 +1,15 @@
+//Created by Josh on 11/19/18
 package com.example.josh.flappycoskun;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
+// import android.app.Activity;
+// import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
+// import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
@@ -15,10 +19,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // Example of a call to a native method
-        TextView tv = (TextView) findViewById(R.id.sample_text);
-        tv.setText(stringFromJNI());
+        requestWindowFeature(Window.FEATURE_NO_TITLE); //no toolbar
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN); //fullscreen the display
+        setContentView(new com.example.josh.flappycoskun.GameView(this)); //GameView class defined in GameView.java file
     }
 
     /**
