@@ -48,7 +48,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public void surfaceDestroyed(SurfaceHolder holder){
         boolean retry = true;
-        while(true){ //keep looping until it works
+        while(retry){ //keep looping until it works
             try{
                 thread.setRunning(false);
                 thread.join();
@@ -77,12 +77,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     private void createLevel() {
         //initializing objects
-        birdy = new Birdy(/*BIRD IMAGE*/);
+        birdy = new Birdy(/*BIRD BITMAP*/);
         Bitmap bmp;
         Bitmap bmp2;
 
-        bmp = resizeBitmap(...);//BOTTOM PIPE IMAGE
-        bmp2 = resizeBitmap(...);//TOP PIPE IMAGE
+        bmp = resizeBitmap(/*bmp*/, 50, 100);//BOTTOM PIPE IMAGE
+        bmp2 = resizeBitmap(/*bmp*/, 50, 100);//TOP PIPE IMAGE
 
         //three pipes onscreen at a time
         pipe1 = new PipeClass(bmp, bmp2, , );
