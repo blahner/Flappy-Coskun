@@ -21,6 +21,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public PipeClass pipe1, pipe2, pipe3;
     public static int velocity = 10; //speed at which bird moves in x (or, conversely, the speed at which background moves toward bird)
     public static int gapHeight = 500; //space of gap between pipes
+    private static int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+    private static int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
     public GameView(Context context){
         super(context);
@@ -77,17 +79,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     private void createLevel() {
         //initializing objects
-        birdy = new Birdy(/*BIRD BITMAP*/);
+        birdy = new Birdy(BitmapFactory.decodeFile("C:\\Users\\Josh\\Documents\\GitHub\\Flappy-Coskun\\graphics\\firstBird"));
         Bitmap bmp;
         Bitmap bmp2;
 
-        bmp = resizeBitmap(/*bmp*/, 50, 100);//BOTTOM PIPE IMAGE
-        bmp2 = resizeBitmap(/*bmp*/, 50, 100);//TOP PIPE IMAGE
+        bmp = resizeBitmap(BitmapFactory.decodeFile("C:\\Users\\Josh\\Documents\\GitHub\\Flappy-Coskun\\graphics\\BottomPipe"), 50, 100);//BOTTOM PIPE IMAGE
+        bmp2 = resizeBitmap(BitmapFactory.decodeFile("C:\\Users\\Josh\\Documents\\GitHub\\Flappy-Coskun\\graphics\\TopPipe"), 50, 100);//TOP PIPE IMAGE
 
         //three pipes onscreen at a time
-        pipe1 = new PipeClass(bmp, bmp2, , );
-        pipe2 = new PipeClass(bmp, bmp2, , );
-        pipe3 = new PipeClass(bmp, bmp2, , );
+        pipe1 = new PipeClass(bmp, bmp2, 200, 100);
+        pipe2 = new PipeClass(bmp, bmp2, 300, 100);
+        pipe3 = new PipeClass(bmp, bmp2, 400, 100);
     }
 
     @Override
@@ -99,11 +101,28 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update(){
         logic();
-        Birdy.update(); //called from a static context??
+        birdy.update();
     }
 
     public void logic(){
-        //detect if character touched a pipe (reset level if they are)
+        //has character hit top or bottom of screen? (if so, reset level)
+        if(birdy.y < 0)
+            resetLevel(); //in a later version, these should return user to a menu
+        if(birdy.y > screenHeight)
+            resetLevel();
+        //has character touched a pipe? (if so, reset level)
+        //detect if one of the three pipes is gone, need another
+    }
+
+    public void resetLevel(){
+        //in a later update, we should try creating a menu where the user chooses to start game
+        pipe1.xPos = 1; //these
+        pipe2.xPos = 2; //are
+        pipe3.xPos = 3; //arbitrary
+        pipe1.yPos = 0; //numbers
+        pipe2.yPos = 0; //change
+        pipe3.yPos = 0; //later
+        birdy.y = 50;
     }
 
     @Override
@@ -113,7 +132,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         if(canvas != null){
             canvas.drawRGB(0,0,100); //full blue background
             //draw character
-            Birdy.draw(canvas); //error: non-static method draw(Canvas) cannot be referenced from a static context
+            birdy.draw(canvas); //error: non-static method draw(Canvas) cannot be referenced from a static context
             //draw pipes
             pipe1.draw(canvas);
             pipe2.draw(canvas);
