@@ -7,9 +7,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +44,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void surfaceCreated(SurfaceHolder holder){
-        thread = new com.example.josh.flappycoskun.MainThread(getHolder(), this);
+        createLevel();
 
         thread.setRunning(true);
         thread.start();
@@ -79,12 +82,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     private void createLevel() {
         //initializing objects
-        birdy = new Birdy(BitmapFactory.decodeFile("C:\\Users\\Josh\\Documents\\GitHub\\Flappy-Coskun\\graphics\\firstBird"));
-        Bitmap bmp;
-        Bitmap bmp2;
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.bird, null);
+        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.bird);
+        birdy = new Birdy(b);
 
-        bmp = resizeBitmap(BitmapFactory.decodeFile("C:\\Users\\Josh\\Documents\\GitHub\\Flappy-Coskun\\graphics\\BottomPipe"), 50, 100);//BOTTOM PIPE IMAGE
-        bmp2 = resizeBitmap(BitmapFactory.decodeFile("C:\\Users\\Josh\\Documents\\GitHub\\Flappy-Coskun\\graphics\\TopPipe"), 50, 100);//TOP PIPE IMAGE
+        Drawable drawable1 = ResourcesCompat.getDrawable(getResources(), R.drawable.top_pipe, null);
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.top_pipe);
+
+        Drawable drawable2 = ResourcesCompat.getDrawable(getResources(), R.drawable.bottom_pipe, null);
+        Bitmap bmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.bottom_pipe);
+        bmp = resizeBitmap(bmp, 50, 100); //BOTTOM PIPE IMAGE
+        bmp2 = resizeBitmap(bmp2, 50, 100); //TOP PIPE IMAGE
 
         //three pipes onscreen at a time
         pipe1 = new PipeClass(bmp, bmp2, 200, 100);
@@ -106,23 +114,25 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void logic(){
         //has character hit top or bottom of screen? (if so, reset level)
-        if(birdy.y < 0)
-            resetLevel(); //in a later version, these should return user to a menu
-        if(birdy.y > screenHeight)
+        if(birdy.y < 0){
             resetLevel();
+        }//in a later version, these should return user to a menu
+        if(birdy.y > screenHeight){
+            resetLevel();
+        }
         //has character touched a pipe? (if so, reset level)
         //detect if one of the three pipes is gone, need another
     }
 
     public void resetLevel(){
         //in a later update, we should try creating a menu where the user chooses to start game
-        pipe1.xPos = 1; //these
-        pipe2.xPos = 2; //are
-        pipe3.xPos = 3; //arbitrary
+        pipe1.xPos = 2000; //these
+        pipe2.xPos = 4400; //are
+        pipe3.xPos = 3200; //arbitrary
         pipe1.yPos = 0; //numbers
-        pipe2.yPos = 0; //change
-        pipe3.yPos = 0; //later
-        birdy.y = 50;
+        pipe2.yPos = 200; //change
+        pipe3.yPos = 300; //later
+        birdy.y = 100;
     }
 
     @Override

@@ -18,10 +18,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         requestWindowFeature(Window.FEATURE_NO_TITLE); //no toolbar
+        setContentView(R.layout.activity_main);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN); //fullscreen the display
         setContentView(new com.example.josh.flappycoskun.GameView(this)); //GameView class defined in GameView.java file
+        //com.example.josh.flappycoskun.GameView.createLevel();
     }
 
     /**
