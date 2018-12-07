@@ -23,9 +23,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private Birdy birdy;
     public PipeClass pipe1, pipe2, pipe3;
     public static int velocity = 10; //speed at which bird moves in x (or, conversely, the speed at which background moves toward bird)
-    public static int gapHeight = 500; //space of gap between pipes
     private static int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private static int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+    public static int pipeWidth = 200;
+    public static int pipeHeight = 400;
+    public static int gapHeight = 500; //space of gap between pipes
 
     public GameView(Context context){
         super(context);
@@ -91,13 +93,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
         Drawable drawable2 = ResourcesCompat.getDrawable(getResources(), R.drawable.bottom_pipe, null);
         Bitmap bmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.bottom_pipe);
-        bmp = resizeBitmap(bmp, 200, 400); //BOTTOM PIPE IMAGE
-        bmp2 = resizeBitmap(bmp2, 200, 400); //TOP PIPE IMAGE
+        bmp = resizeBitmap(bmp, pipeWidth, pipeHeight); //TOP PIPE IMAGE
+        bmp2 = resizeBitmap(bmp2, pipeWidth, pipeHeight); //BOTTOM PIPE IMAGE
 
         //three pipes onscreen at a time
-        pipe1 = new PipeClass(bmp, bmp2, 200, 400);
-        pipe2 = new PipeClass(bmp, bmp2, 300, 400);
-        pipe3 = new PipeClass(bmp, bmp2, 400, 400);
+        pipe1 = new PipeClass(bmp, bmp2, screenWidth - pipeWidth, 200);
+        pipe2 = new PipeClass(bmp, bmp2, screenWidth - pipeWidth - 500, 200);
+        pipe3 = new PipeClass(bmp, bmp2, screenWidth - pipeWidth - 1000, 200);
     }
 
     @Override
@@ -110,6 +112,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void update(){
         logic();
         birdy.update();
+        pipe1.update();
+        pipe2.update();
+        pipe3.update();
     }
 
     public void logic(){
@@ -122,17 +127,26 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         }
         //has character touched a pipe? (if so, reset level)
         //detect if one of the three pipes is gone, need another
+        if(pipe1.xPos < 0){
+            pipe1.xPos = screenWidth - pipeWidth;
+        }
+        if(pipe2.xPos < 0){
+            pipe2.xPos = screenWidth - pipeWidth;
+        }
+        if(pipe3.xPos < 0){
+            pipe3.xPos = screenWidth - pipeWidth;
+        }
     }
 
     public void resetLevel(){
         //in a later update, we should try creating a menu where the user chooses to start game
-        pipe1.xPos = 200; //these
-        pipe2.xPos = 800; //are
-        pipe3.xPos = 1200; //arbitrary
-        pipe1.yPos = 400; //numbers
-        pipe2.yPos = 400; //change
-        pipe3.yPos = 400; //later
-        birdy.y = 100;
+        pipe1.xPos = screenWidth - pipeWidth; //these
+        pipe2.xPos = screenWidth - screenWidth/4; //are
+        pipe3.xPos = screenWidth - screenWidth/2; //arbitrary
+        pipe1.yPos = 200; //numbers
+        pipe2.yPos = 200; //change
+        pipe3.yPos = 200; //later
+        birdy.y = 200;
     }
 
     @Override
