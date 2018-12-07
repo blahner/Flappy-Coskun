@@ -84,20 +84,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         //initializing objects
         Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.bird, null);
         Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.bird);
-        birdy = new Birdy(b);
+        birdy = new Birdy(resizeBitmap(b, 300, 300));
 
         Drawable drawable1 = ResourcesCompat.getDrawable(getResources(), R.drawable.top_pipe, null);
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.top_pipe);
 
         Drawable drawable2 = ResourcesCompat.getDrawable(getResources(), R.drawable.bottom_pipe, null);
         Bitmap bmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.bottom_pipe);
-        bmp = resizeBitmap(bmp, 50, 100); //BOTTOM PIPE IMAGE
-        bmp2 = resizeBitmap(bmp2, 50, 100); //TOP PIPE IMAGE
+        bmp = resizeBitmap(bmp, 200, 400); //BOTTOM PIPE IMAGE
+        bmp2 = resizeBitmap(bmp2, 200, 400); //TOP PIPE IMAGE
 
         //three pipes onscreen at a time
-        pipe1 = new PipeClass(bmp, bmp2, 200, 100);
-        pipe2 = new PipeClass(bmp, bmp2, 300, 100);
-        pipe3 = new PipeClass(bmp, bmp2, 400, 100);
+        pipe1 = new PipeClass(bmp, bmp2, 200, 400);
+        pipe2 = new PipeClass(bmp, bmp2, 300, 400);
+        pipe3 = new PipeClass(bmp, bmp2, 400, 400);
     }
 
     @Override
@@ -126,12 +126,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void resetLevel(){
         //in a later update, we should try creating a menu where the user chooses to start game
-        pipe1.xPos = 2000; //these
-        pipe2.xPos = 4400; //are
-        pipe3.xPos = 3200; //arbitrary
-        pipe1.yPos = 0; //numbers
-        pipe2.yPos = 200; //change
-        pipe3.yPos = 300; //later
+        pipe1.xPos = 200; //these
+        pipe2.xPos = 800; //are
+        pipe3.xPos = 1200; //arbitrary
+        pipe1.yPos = 400; //numbers
+        pipe2.yPos = 400; //change
+        pipe3.yPos = 400; //later
         birdy.y = 100;
     }
 
