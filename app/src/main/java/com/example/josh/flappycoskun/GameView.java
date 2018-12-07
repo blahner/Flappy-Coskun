@@ -98,8 +98,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
         //three pipes onscreen at a time
         pipe1 = new PipeClass(bmp, bmp2, screenWidth - pipeWidth, 200);
-        pipe2 = new PipeClass(bmp, bmp2, screenWidth - pipeWidth - 500, 200);
-        pipe3 = new PipeClass(bmp, bmp2, screenWidth - pipeWidth - 1000, 200);
+        pipe2 = new PipeClass(bmp, bmp2, screenWidth - pipeWidth - screenWidth/3, 200);
+        pipe3 = new PipeClass(bmp, bmp2, screenWidth - pipeWidth - 2*screenWidth/3, 200);
     }
 
     @Override
@@ -128,21 +128,21 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         //has character touched a pipe? (if so, reset level)
         //detect if one of the three pipes is gone, need another
         if(pipe1.xPos < 0){
-            pipe1.xPos = screenWidth - pipeWidth;
+            pipe1.xPos = screenWidth;
         }
         if(pipe2.xPos < 0){
-            pipe2.xPos = screenWidth - pipeWidth;
+            pipe2.xPos = screenWidth;
         }
         if(pipe3.xPos < 0){
-            pipe3.xPos = screenWidth - pipeWidth;
+            pipe3.xPos = screenWidth;
         }
     }
 
     public void resetLevel(){
         //in a later update, we should try creating a menu where the user chooses to start game
         pipe1.xPos = screenWidth - pipeWidth; //these
-        pipe2.xPos = screenWidth - screenWidth/4; //are
-        pipe3.xPos = screenWidth - screenWidth/2; //arbitrary
+        pipe2.xPos = screenWidth - pipeWidth - screenWidth/3; //are
+        pipe3.xPos = screenWidth - pipeWidth - 2*screenWidth/3; //arbitrary
         pipe1.yPos = 200; //numbers
         pipe2.yPos = 200; //change
         pipe3.yPos = 200; //later
