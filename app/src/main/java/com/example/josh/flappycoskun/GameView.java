@@ -104,9 +104,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         bmp2 = resizeBitmap(bmp2, PipeClass.width, PipeClass.height); //BOTTOM PIPE IMAGE
 
         //initialize all three pipes
-        pipe1 = new PipeClass(bmp, bmp2, screenWidth - PipeClass.width, 0);
+        pipe1 = new PipeClass(bmp, bmp2, screenWidth, 0);
         pipes.add(pipe1);
-        pipe2 = new PipeClass(bmp, bmp2, screenWidth - PipeClass.width - screenWidth/3, 0);
+        pipe2 = new PipeClass(bmp, bmp2, screenWidth + screenWidth/2, 0);
         pipes.add(pipe2);
 
     }
@@ -114,7 +114,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     @Override
     public boolean onTouchEvent(MotionEvent event){
         //on user touch, make the bird increase in height
-        birdy.y = birdy.y - (birdy.yVelocity * 20);
+        birdy.velocity = 20;
         return super.onTouchEvent(event);
     }
 
@@ -134,29 +134,32 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         if(birdy.y > screenHeight){
             resetLevel();
         }
-        //has character touched a pipe? (if so, reset level)
+
         for(PipeClass p : pipes) {
-            if( (birdy.x > p.getxPos() && birdy.x < p.getxPos() + PipeClass.width) || (birdy.x + birdy.width > p.getxPos() && birdy.x + birdy.width < p.getxPos() + PipeClass.width))
-                if(birdy.y < p.getyPos() + PipeClass.height && birdy.y > p.getyPos()) {
-                //colliding with top pipe
-                resetLevel();
-                }
-                if(birdy.y + birdy.height > p.getyPos() + PipeClass.height + PipeClass.gapSpacing)
-                {   //colliding with bottom pipe
+            if( (birdy.x > p.getxPos() && birdy.x < p.getxPos() + PipeClass.width) || (birdy.x + birdy.width > p.getxPos() && birdy.x + birdy.width < p.getxPos() + PipeClass.width)) {
+                if (birdy.y < p.getyPos() + PipeClass.height && birdy.y > p.getyPos()) {
+                    //colliding with top pipe
                     resetLevel();
                 }
-            if(p.getxPos() < 0)
+                if (birdy.y + birdy.height > p.getyPos() + PipeClass.height + PipeClass.gapSpacing) {   //colliding with bottom pipe
+                    resetLevel();
+                }
+            }
+            if (p.getxPos() < 0) {
                 p.setxPos(screenWidth);//detect if one of the three pipes is gone, need another
+                p.resetyPos();
+            }
         }
     }
 
     public void resetLevel(){
         //in a later update, we should try creating a menu where the user chooses to start game
-        pipe1.setxPos(screenWidth - PipeClass.width);
-        pipe2.setxPos(screenWidth - PipeClass.width - screenWidth/2);
+        pipe1.setxPos(screenWidth);
+        pipe2.setxPos(screenWidth + screenWidth/2);
         pipe1.resetyPos();
         pipe2.resetyPos();
         birdy.y = 700;
+        birdy.velocity = 0;
         Random rand = new Random();
         red = rand.nextInt();
         blue = rand.nextInt();

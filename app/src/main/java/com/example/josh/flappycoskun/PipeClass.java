@@ -15,7 +15,7 @@ class PipeClass {
     private int yPos, xPos;
     public static int width = 200;
     public static int height = Resources.getSystem().getDisplayMetrics().heightPixels; //screenheight (for good measure)
-    public static int gapSpacing = Birdy.height * 3; //space of gap between pipes
+    public static int gapSpacing = 600; //space of gap between pipes
 
     public PipeClass (Bitmap bmp, Bitmap bmp2, int x, int y){ //constructor
         image = bmp;
