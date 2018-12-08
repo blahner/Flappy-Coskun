@@ -10,15 +10,15 @@ import android.hardware.SensorManager;
 
 class Birdy {
     private Bitmap image;
-    public int x = 100;
-    public int y = 700; //character position
-    public static int width = 150;
+    static int width = 150;
     public static int height = 150;
     public int gravity = 1;
     public int velocity = 0;
     int delay = 20;
     private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+    public int x = 100;
+    public int y = screenHeight/2; //character position
 
     public Birdy(Bitmap bmp){
         image = bmp;
@@ -28,10 +28,10 @@ class Birdy {
         canvas.drawBitmap(image, x, y, null);
     }
 
-    public void update(){
+    public void update(int gameState){
         if(delay > 0){
             delay--;
-        } else {
+        } else if(gameState == 1){
             velocity -= gravity;
             y -= velocity;
         }

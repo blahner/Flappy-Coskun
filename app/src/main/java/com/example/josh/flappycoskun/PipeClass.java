@@ -13,11 +13,11 @@ class PipeClass {
     private Bitmap image; //top
     private Bitmap image2; //bottom
     private int yPos, xPos;
-    public static int width = 200;
+    static int width = 200;
     public static int height = Resources.getSystem().getDisplayMetrics().heightPixels; //screenheight (for good measure)
     public static int gapSpacing = 600; //space of gap between pipes
 
-    public PipeClass (Bitmap bmp, Bitmap bmp2, int x, int y){ //constructor
+    public PipeClass (Bitmap bmp, Bitmap bmp2, int x){ //constructor
         image = bmp;
         image2 = bmp2;
         resetyPos();//position of top pipe (note the pipes hang off of the top of the screen)
@@ -29,8 +29,9 @@ class PipeClass {
         canvas.drawBitmap(image2, xPos, yPos + height + gapSpacing, null); //draw the bottom pipe
     }
 
-    public void update(){
-        xPos -= velocity; //move pipes in x-dir with time
+    public void update(int inGame){
+        if(inGame == 1)
+            xPos -= GameView.velocity; //move pipes in x-dir with time
     }
     public int getxPos(){
         return xPos;
