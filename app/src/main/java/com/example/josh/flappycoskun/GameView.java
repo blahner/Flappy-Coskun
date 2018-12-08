@@ -6,7 +6,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.MotionEvent;
@@ -30,11 +32,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private static int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private static int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     public ArrayList<PipeClass> pipes = new ArrayList<>(2);
-
+    public int score;
     //initialize background colors
-    int red = 0;
+    int red = 100;
     int green = 0;
-    int blue = 1;
+    int blue = 0;
 
     public GameView(Context context){
         super(context);
@@ -90,6 +92,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     private void createLevel() {
+
+        score = 0;
+
         //initializing objects
         //Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.bird, null);
         Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.bird);
@@ -148,12 +153,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             if (p.getxPos() < 0) {
                 p.setxPos(screenWidth);//detect if one of the three pipes is gone, need another
                 p.resetyPos();
+                score++;
             }
         }
     }
 
     public void resetLevel(){
         //in a later update, we should try creating a menu where the user chooses to start game
+        score = 0;
         pipe1.setxPos(screenWidth);
         pipe2.setxPos(screenWidth + screenWidth/2);
         pipe1.resetyPos();
@@ -178,5 +185,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             for(PipeClass p : pipes)
                 p.draw(canvas);
         }
+        drawScore(canvas, score);
+    }
+
+    public void drawScore(Canvas canvas, int num){
+        Paint paint = new Paint();
+        paint.setColor(Color.BLACK);
+        paint.setTextSize(100);
+        canvas.drawText(Integer.toString(num), screenWidth/2 - 50, 100, paint);
     }
 }
