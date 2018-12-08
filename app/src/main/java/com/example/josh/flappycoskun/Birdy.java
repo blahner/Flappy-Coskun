@@ -5,16 +5,14 @@ package com.example.josh.flappycoskun;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.hardware.SensorManager;
 
 class Birdy {
     private Bitmap image;
     static int width = 150;
     public static int height = 150;
-    public int gravity = 1;
-    public int velocity = 0;
-    int delay = 20;
+    public double gravity = 0.8;
+    public double velocity = 0;
+    //int delay = 20;
     private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     public int x = 100;
@@ -29,9 +27,7 @@ class Birdy {
     }
 
     public void update(int gameState){
-        if(delay > 0){
-            delay--;
-        } else if(gameState == 1){
+        if(gameState == 1){
             velocity -= gravity;
             y -= velocity;
         }

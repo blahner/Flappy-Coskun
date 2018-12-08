@@ -29,9 +29,9 @@ class PipeClass {
         canvas.drawBitmap(image2, xPos, yPos + height + gapSpacing, null); //draw the bottom pipe
     }
 
-    public void update(int inGame){
+    public void update(int inGame, double velocity){
         if(inGame == 1)
-            xPos -= GameView.velocity; //move pipes in x-dir with time
+            xPos -= velocity; //move pipes in x-dir with time
     }
     public int getxPos(){
         return xPos;
