@@ -14,20 +14,27 @@ import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
+import java.nio.channels.Pipe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Vector;
+
+import static com.example.josh.flappycoskun.MainThread.canvas;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private com.example.josh.flappycoskun.MainThread thread; //note: NOT android.support.annotation.MainThread, but a custom MainThread class which extends Thread
     private Birdy birdy;
-    public PipeClass pipe1, pipe2, pipe3;
+    public PipeClass pipe1, pipe2;
     public static int velocity = 10; //speed at which bird moves in x (or, conversely, the speed at which background moves toward bird)
     private static int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private static int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
-    public static int pipeWidth = 200;
-    public static int pipeHeight = 400;
-    public static int gapHeight = 500; //space of gap between pipes
+    public ArrayList<PipeClass> pipes = new ArrayList<>(2);
+
+    //initialize background colors
+    int red = 0;
+    int green = 0;
+    int blue = 1;
 
     public GameView(Context context){
         super(context);
@@ -84,37 +91,39 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     private void createLevel() {
         //initializing objects
-        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.bird, null);
+        //Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.bird, null);
         Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.bird);
-        birdy = new Birdy(resizeBitmap(b, 300, 300));
+        birdy = new Birdy(resizeBitmap(b, Birdy.width, Birdy.height));
 
-        Drawable drawable1 = ResourcesCompat.getDrawable(getResources(), R.drawable.top_pipe, null);
+        //Drawable drawable1 = ResourcesCompat.getDrawable(getResources(), R.drawable.top_pipe, null);
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.top_pipe);
 
-        Drawable drawable2 = ResourcesCompat.getDrawable(getResources(), R.drawable.bottom_pipe, null);
+        //Drawable drawable2 = ResourcesCompat.getDrawable(getResources(), R.drawable.bottom_pipe, null);
         Bitmap bmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.bottom_pipe);
-        bmp = resizeBitmap(bmp, pipeWidth, pipeHeight); //TOP PIPE IMAGE
-        bmp2 = resizeBitmap(bmp2, pipeWidth, pipeHeight); //BOTTOM PIPE IMAGE
+        bmp = resizeBitmap(bmp, PipeClass.width, PipeClass.height); //TOP PIPE IMAGE
+        bmp2 = resizeBitmap(bmp2, PipeClass.width, PipeClass.height); //BOTTOM PIPE IMAGE
 
-        //three pipes onscreen at a time
-        pipe1 = new PipeClass(bmp, bmp2, screenWidth - pipeWidth, 200);
-        pipe2 = new PipeClass(bmp, bmp2, screenWidth - pipeWidth - screenWidth/3, 200);
-        pipe3 = new PipeClass(bmp, bmp2, screenWidth - pipeWidth - 2*screenWidth/3, 200);
+        //initialize all three pipes
+        pipe1 = new PipeClass(bmp, bmp2, screenWidth - PipeClass.width, 0);
+        pipes.add(pipe1);
+        pipe2 = new PipeClass(bmp, bmp2, screenWidth - PipeClass.width - screenWidth/3, 0);
+        pipes.add(pipe2);
+
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
         //on user touch, make the bird increase in height
-        birdy.y = birdy.y - (birdy.yVelocity * 10);
+        birdy.y = birdy.y - (birdy.yVelocity * 20);
         return super.onTouchEvent(event);
     }
 
-    public void update(){
+    public void update() {
         logic();
         birdy.update();
-        pipe1.update();
-        pipe2.update();
-        pipe3.update();
+        for (PipeClass p : pipes){
+            p.update();
+        }
     }
 
     public void logic(){
@@ -126,27 +135,32 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             resetLevel();
         }
         //has character touched a pipe? (if so, reset level)
-        //detect if one of the three pipes is gone, need another
-        if(pipe1.xPos < 0){
-            pipe1.xPos = screenWidth;
-        }
-        if(pipe2.xPos < 0){
-            pipe2.xPos = screenWidth;
-        }
-        if(pipe3.xPos < 0){
-            pipe3.xPos = screenWidth;
+        for(PipeClass p : pipes) {
+            if( (birdy.x > p.getxPos() && birdy.x < p.getxPos() + PipeClass.width) || (birdy.x + birdy.width > p.getxPos() && birdy.x + birdy.width < p.getxPos() + PipeClass.width))
+                if(birdy.y < p.getyPos() + PipeClass.height && birdy.y > p.getyPos()) {
+                //colliding with top pipe
+                resetLevel();
+                }
+                if(birdy.y + birdy.height > p.getyPos() + PipeClass.height + PipeClass.gapSpacing)
+                {   //colliding with bottom pipe
+                    resetLevel();
+                }
+            if(p.getxPos() < 0)
+                p.setxPos(screenWidth);//detect if one of the three pipes is gone, need another
         }
     }
 
     public void resetLevel(){
         //in a later update, we should try creating a menu where the user chooses to start game
-        pipe1.xPos = screenWidth - pipeWidth; //these
-        pipe2.xPos = screenWidth - pipeWidth - screenWidth/3; //are
-        pipe3.xPos = screenWidth - pipeWidth - 2*screenWidth/3; //arbitrary
-        pipe1.yPos = 200; //numbers
-        pipe2.yPos = 200; //change
-        pipe3.yPos = 200; //later
-        birdy.y = 200;
+        pipe1.setxPos(screenWidth - PipeClass.width);
+        pipe2.setxPos(screenWidth - PipeClass.width - screenWidth/2);
+        pipe1.resetyPos();
+        pipe2.resetyPos();
+        birdy.y = 700;
+        Random rand = new Random();
+        red = rand.nextInt();
+        blue = rand.nextInt();
+        green = rand.nextInt();
     }
 
     @Override
@@ -154,13 +168,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         //display game
         super.draw(canvas);
         if(canvas != null){
-            canvas.drawRGB(0,0,100); //full blue background
+            canvas.drawRGB(red,green,blue); //random background
             //draw character
             birdy.draw(canvas); //error: non-static method draw(Canvas) cannot be referenced from a static context
             //draw pipes
-            pipe1.draw(canvas);
-            pipe2.draw(canvas);
-            pipe3.draw(canvas);
+            for(PipeClass p : pipes)
+                p.draw(canvas);
         }
     }
 }
