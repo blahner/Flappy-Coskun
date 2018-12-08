@@ -13,8 +13,6 @@ public class MainThread extends Thread
     private volatile boolean running = true;
     public static Canvas canvas;
     private com.example.josh.flappycoskun.GameView gameView;
-    private int goalFPS = 25; //Update surface at 25FPS
-    private double avFPS; //average FPS
 
     public MainThread(SurfaceHolder surfaceHolder, com.example.josh.flappycoskun.GameView gameView){
         super();

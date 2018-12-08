@@ -16,7 +16,6 @@ import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 import android.widget.ImageView;
 
-import java.nio.channels.Pipe;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -28,11 +27,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private com.example.josh.flappycoskun.MainThread thread; //note: NOT android.support.annotation.MainThread, but a custom MainThread class which extends Thread
     private Birdy birdy;
     public PipeClass pipe1, pipe2;
-    public static int velocity = 10; //speed at which bird moves in x (or, conversely, the speed at which background moves toward bird)
     private static int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private static int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     public ArrayList<PipeClass> pipes = new ArrayList<>(2);
     public int score;
+    final static int MENU = 0;
+    final static int GAME = 1;
+    public int gameState = MENU;
+    public static int velocity = 10; //speed at which bird moves in x (or, conversely, the speed at which background moves toward bird)
     //initialize background colors
     int red = 100;
     int green = 0;
@@ -76,7 +78,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     }
 
     //some info on bitmaps & canvases: http://www.informit.com/articles/article.aspx?p=2143148&seqNum=2
-    public Bitmap resizeBitmap(Bitmap bmp, int newWidth, int newHeight){
+    public Bitmap resizeBitmap(Bitmap bmp, int newWidth, int newHeight) {
         //returns a NEW bitmap similar to bmp (the input argument), but resized.
         //This is for drawing the various pipes
         int oldWidth = bmp.getWidth();
@@ -90,9 +92,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         bmp.recycle(); //free memory (https://developer.android.com/reference/android/graphics/Bitmap#recycle())
         return resizedBMP;
     }
-
     private void createLevel() {
-
         score = 0;
 
         //initializing objects
@@ -109,25 +109,29 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         bmp2 = resizeBitmap(bmp2, PipeClass.width, PipeClass.height); //BOTTOM PIPE IMAGE
 
         //initialize all three pipes
-        pipe1 = new PipeClass(bmp, bmp2, screenWidth, 0);
+        pipe1 = new PipeClass(bmp, bmp2, screenWidth);
         pipes.add(pipe1);
-        pipe2 = new PipeClass(bmp, bmp2, screenWidth + screenWidth/2, 0);
+        pipe2 = new PipeClass(bmp, bmp2, screenWidth + screenWidth/2);
         pipes.add(pipe2);
 
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
-        //on user touch, make the bird increase in height
-        birdy.velocity = 20;
+        if(gameState == MENU){
+            gameState = GAME;
+        }else {
+            //on user touch, make the bird increase in height
+            birdy.velocity = 20;
+        }
         return super.onTouchEvent(event);
     }
 
     public void update() {
         logic();
-        birdy.update();
+        birdy.update(gameState);
         for (PipeClass p : pipes){
-            p.update();
+            p.update(gameState);
         }
     }
 
@@ -141,12 +145,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         }
 
         for(PipeClass p : pipes) {
-            if( (birdy.x > p.getxPos() && birdy.x < p.getxPos() + PipeClass.width) || (birdy.x + birdy.width > p.getxPos() && birdy.x + birdy.width < p.getxPos() + PipeClass.width)) {
-                if (birdy.y < p.getyPos() + PipeClass.height && birdy.y > p.getyPos()) {
+            if( (birdy.x > p.getxPos() && birdy.x < p.getxPos() + PipeClass.width) || (birdy.x + Birdy.width > p.getxPos() && birdy.x + Birdy.width < p.getxPos() + PipeClass.width)) {
+                if (birdy.y < p.getyPos() + PipeClass.height) {
                     //colliding with top pipe
                     resetLevel();
                 }
-                if (birdy.y + birdy.height > p.getyPos() + PipeClass.height + PipeClass.gapSpacing) {   //colliding with bottom pipe
+                if (birdy.y + Birdy.height > p.getyPos() + PipeClass.height + PipeClass.gapSpacing) {   //colliding with bottom pipe
                     resetLevel();
                 }
             }
@@ -161,12 +165,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     public void resetLevel(){
         //in a later update, we should try creating a menu where the user chooses to start game
         score = 0;
+        gameState = MENU;
+
         pipe1.setxPos(screenWidth);
         pipe2.setxPos(screenWidth + screenWidth/2);
         pipe1.resetyPos();
         pipe2.resetyPos();
+
         birdy.y = 700;
         birdy.velocity = 0;
+
+        //background
         Random rand = new Random();
         red = rand.nextInt();
         blue = rand.nextInt();
@@ -178,14 +187,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         //display game
         super.draw(canvas);
         if(canvas != null){
-            canvas.drawRGB(red,green,blue); //random background
+            canvas.drawRGB(red,green,blue); //random background for now
             //draw character
-            birdy.draw(canvas); //error: non-static method draw(Canvas) cannot be referenced from a static context
+            birdy.draw(canvas);
             //draw pipes
             for(PipeClass p : pipes)
                 p.draw(canvas);
         }
         drawScore(canvas, score);
+        if(gameState == MENU){
+            Paint paint = new Paint();
+            paint.setColor(Color.BLACK);
+            paint.setTextSize(100);
+            canvas.drawText("tap to begin", screenWidth/2, screenHeight/2 + 100, paint);
+        }
     }
 
     public void drawScore(Canvas canvas, int num){
