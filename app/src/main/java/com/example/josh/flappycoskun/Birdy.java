@@ -12,8 +12,6 @@ class Birdy {
     public static int height = 150;
     public double gravity = 0.8;
     public double velocity = 0;
-    //int delay = 20;
-    private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     public int x = 100;
     public int y = screenHeight/2; //character position
@@ -26,8 +24,8 @@ class Birdy {
         canvas.drawBitmap(image, x, y, null);
     }
 
-    public void update(int gameState){
-        if(gameState == 1){
+    public void update(boolean inGame){
+        if(inGame){
             velocity -= gravity;
             y -= velocity;
         }

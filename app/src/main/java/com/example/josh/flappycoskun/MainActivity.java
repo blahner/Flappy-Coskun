@@ -7,7 +7,6 @@ import android.os.Bundle;
 // import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
-// import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     // Used to load the 'native-lib' library on application startup.

@@ -9,19 +9,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.res.ResourcesCompat;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.Vector;
-
-import static com.example.josh.flappycoskun.MainThread.canvas;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private com.example.josh.flappycoskun.MainThread thread; //note: NOT android.support.annotation.MainThread, but a custom MainThread class which extends Thread
@@ -30,10 +23,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private static int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private static int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     public ArrayList<PipeClass> pipes = new ArrayList<>(2);
-    public int score;
-    final static int MENU = 0;
-    final static int GAME = 1;
-    public int gameState = MENU;
+    public int score; //updated every time a pipe travels off-screen
+    public boolean inGame = false;
     public int velocity = 6; //speed at which bird moves in x (or, conversely, the speed at which background moves toward bird)
     //initialize background colors
     int red = 100;
@@ -80,7 +71,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     //some info on bitmaps & canvases: http://www.informit.com/articles/article.aspx?p=2143148&seqNum=2
     public Bitmap resizeBitmap(Bitmap bmp, int newWidth, int newHeight) {
         //returns a NEW bitmap similar to bmp (the input argument), but resized.
-        //This is for drawing the various pipes
         int oldWidth = bmp.getWidth();
         int oldHeight = bmp.getHeight();
 
@@ -115,8 +105,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
-        if(gameState == MENU){
-            gameState = GAME;
+        if(!inGame){
+            inGame = true;
         }else {
             //on user touch, make the bird increase in height
             birdy.velocity = 18;
@@ -126,9 +116,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     public void update() {
         logic();
-        birdy.update(gameState);
+        birdy.update(inGame);
         for (PipeClass p : pipes){
-            p.update(gameState, velocity);
+            p.update(inGame, velocity);
         }
     }
 
@@ -152,17 +142,18 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 }
             }
             if (p.getxPos() < 0) {
-                p.setxPos(screenWidth);//detect if a pipe has gone off screen
+                //pipe has travelled off screen
+                p.setxPos(screenWidth);
                 p.resetyPos();
                 score++;
-                velocity = 6 + score/5;
+                velocity = 6 + score/10; //increase speed
             }
         }
     }
 
     public void resetLevel(){
         score = 0;
-        gameState = MENU; //prompt user to "tap to begin"
+        inGame = false;
 
         pipe1.setxPos(screenWidth);
         pipe2.setxPos(screenWidth + screenWidth/2);
@@ -193,7 +184,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         }
         drawScore(canvas, score);
 
-        if(gameState == MENU){
+        if(!inGame){
+            //draw the "tap to begin" prompt
             Paint paint = new Paint();
             paint.setColor(Color.BLACK);
             paint.setTextSize(100);
