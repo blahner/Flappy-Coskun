@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
@@ -68,39 +69,23 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-    //some info on bitmaps & canvases: http://www.informit.com/articles/article.aspx?p=2143148&seqNum=2
-    public Bitmap resizeBitmap(Bitmap bmp, int newWidth, int newHeight) {
-        //returns a NEW bitmap similar to bmp (the input argument), but resized.
-        int oldWidth = bmp.getWidth();
-        int oldHeight = bmp.getHeight();
-
-        //resizing
-        Matrix matrix = new Matrix();
-        matrix.postScale(((float) newWidth) / oldWidth, ((float) newHeight) / oldHeight);
-
-        Bitmap resizedBMP = Bitmap.createBitmap(bmp, 0, 0, oldWidth, oldHeight, matrix, false);
-        bmp.recycle(); //free memory (https://developer.android.com/reference/android/graphics/Bitmap#recycle())
-        return resizedBMP;
-    }
-
     private void createLevel() {
         score = 0;
 
         //initializing objects
-        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.bird);
-        birdy = new Birdy(resizeBitmap(b, Birdy.width, Birdy.height));
+        Bitmap b = PhotoHandler.decodeBitmap(getResources(), R.drawable.soxbird, Birdy.width, Birdy.height);
+        birdy = new Birdy(PhotoHandler.resizeBitmap(b, Birdy.width, Birdy.height));
 
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.top_pipe);
         Bitmap bmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.bottom_pipe);
-        bmp = resizeBitmap(bmp, PipeClass.width, PipeClass.height); //TOP PIPE IMAGE
-        bmp2 = resizeBitmap(bmp2, PipeClass.width, PipeClass.height); //BOTTOM PIPE IMAGE
+        bmp = PhotoHandler.resizeBitmap(bmp, PipeClass.width, PipeClass.height); //TOP PIPE IMAGE
+        bmp2 = PhotoHandler.resizeBitmap(bmp2, PipeClass.width, PipeClass.height); //BOTTOM PIPE IMAGE
 
         //initialize all three pipes
         pipe1 = new PipeClass(bmp, bmp2, screenWidth);
         pipes.add(pipe1);
         pipe2 = new PipeClass(bmp, bmp2, screenWidth + screenWidth/2);
         pipes.add(pipe2);
-
     }
 
     @Override
@@ -110,6 +95,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         }else {
             //on user touch, make the bird increase in height
             birdy.velocity = 18;
+            //playFlap();
         }
         return super.onTouchEvent(event);
     }
@@ -175,7 +161,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         //display game
         super.draw(canvas);
         if(canvas != null){
-            canvas.drawRGB(red,green,blue); //random background for now
+            //these 3 lines were an attempt to get the background right. Causes some serious lag though.
+            //Bitmap background = PhotoHandler.decodeBitmap(getResources(), R.drawable.backgroundone, screenWidth/4, screenHeight/16);
+            //Paint paintb = new Paint();
+            //canvas.drawBitmap(PhotoHandler.resizeBitmap(background, screenWidth*4, screenHeight), 0, 0, paintb);
+            canvas.drawRGB(red, blue, green);
             //draw character
             birdy.draw(canvas);
             //draw pipes
@@ -199,4 +189,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         paint.setTextSize(100);
         canvas.drawText(Integer.toString(num), screenWidth/2 - 50, 100, paint);
     }
+
+
+    /*
+    private void playFlap(){
+        Resources res = getResources();
+        int id = res.getIdentifier("", "id", getContext().getPackageName());
+        MediaPlayer mp = MediaPlayer.create(this, com.example.josh.flappycoskun.R.sounds);
+
+    }
+    */
 }
