@@ -7,12 +7,15 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
 class Birdy {
+    private static int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+    private static int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private Bitmap image;
-    static int width = 150;
-    public static int height = 150;
-    public double gravity = 0.8;
+
+    public static int height = screenHeight/15;
+    static int width = height;
+    public double gravity = 1.6;
     public double velocity = 0;
-    private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+
     public int x = 100;
     public int y = screenHeight/2; //character position
 
