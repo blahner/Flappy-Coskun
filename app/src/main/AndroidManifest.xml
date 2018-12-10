@@ -15,6 +15,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter android:label="Flappy Boston">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.APP_MARKET" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with "example://gizmos” -->
+                <data android:scheme="example"
+                    android:host="gizmos" />
+            </intent-filter>
         </activity>
         <activity android:name=".GameActivity">
 
