@@ -20,18 +20,19 @@ import java.util.Random;
 public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private com.example.josh.flappycoskun.MainThread thread; //note: NOT android.support.annotation.MainThread, but a custom MainThread class which extends Thread
     private Birdy birdy;
+    private background back;
     public PipeClass pipe1, pipe2;
     private static int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private static int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     public ArrayList<PipeClass> pipes = new ArrayList<>(2);
     public int score; //updated every time a pipe travels off-screen
     public boolean inGame = false;
-    public int velocity = 6; //speed at which bird moves in x (or, conversely, the speed at which background moves toward bird)
+    public int velocity = 12; //speed at which bird moves in x (or, conversely, the speed at which background moves toward bird)
     //initialize background colors
     int red = 100;
     int green = 0;
     int blue = 0;
-
+    int counter = 0;
     public GameView(Context context){
         super(context);
 
@@ -71,7 +72,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     private void createLevel() {
         score = 0;
+        velocity = 12;
 
+        Bitmap tempscene = BitmapFactory.decodeResource(getResources(), R.drawable.backgroundone);
+        Bitmap scene = PhotoHandler.resizeBitmap(tempscene, background.width, background.height);
+        back = new background(scene);
         //initializing objects
         Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.soxbird);
         birdy = new Birdy(PhotoHandler.resizeBitmap(b, Birdy.width, Birdy.height));
@@ -92,17 +97,26 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             inGame = true;
         }else {
             //on user touch, make the bird increase in height
-            birdy.velocity = 18;
+            birdy.velocity = 28;
             //playFlap();
         }
         return super.onTouchEvent(event);
     }
 
     public void update() {
-        logic();
-        birdy.update(inGame);
-        for (PipeClass p : pipes){
-            p.update(inGame, velocity);
+        counter++;
+        if(counter%2 == 0) {
+            logic();
+            back.update(inGame, velocity/2);
+        }
+        else {
+            birdy.update(inGame);
+            for (PipeClass p : pipes) {
+                p.update(inGame, velocity);
+            }
+        }
+        if(back.getxPos() + background.width < screenWidth) {
+            back.setxPos(0);
         }
     }
 
@@ -130,13 +144,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 p.setxPos(screenWidth);
                 p.resetyPos();
                 score++;
-                velocity = 6 + score/10; //increase speed
+                velocity = 12 + score/10; //increase speed
             }
         }
     }
 
     public void resetLevel(){
         score = 0;
+        back.setxPos(0);
         inGame = false;
 
         pipe1.setxPos(screenWidth);
@@ -160,11 +175,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         super.draw(canvas);
         if(canvas != null){
             //these 3 lines were an attempt to get the background right. Causes some serious lag though.
-            //Bitmap background = PhotoHandler.decodeBitmap(getResources(), R.drawable.backgroundone, screenWidth/4, screenHeight/16);
+            //Bitmap background = PhotoHandler.decodeResource(getResources(), R.drawable.backgroundone, screenWidth/4, screenHeight/16);
             //Paint paintb = new Paint();
             //canvas.drawBitmap(PhotoHandler.resizeBitmap(background, screenWidth*4, screenHeight), 0, 0, paintb);
-            canvas.drawRGB(red, blue, green);
+            //canvas.drawRGB(red, blue, green);
             //draw character
+            back.draw(canvas);
             birdy.draw(canvas);
             //draw pipes
             for(PipeClass p : pipes)
