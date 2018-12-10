@@ -73,18 +73,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         score = 0;
 
         //initializing objects
-        Bitmap b = PhotoHandler.decodeBitmap(getResources(), R.drawable.soxbird, Birdy.width, Birdy.height);
+        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.soxbird);
         birdy = new Birdy(PhotoHandler.resizeBitmap(b, Birdy.width, Birdy.height));
 
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.top_pipe);
-        Bitmap bmp2 = BitmapFactory.decodeResource(getResources(), R.drawable.bottom_pipe);
+        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.greenlinewall);
         bmp = PhotoHandler.resizeBitmap(bmp, PipeClass.width, PipeClass.height); //TOP PIPE IMAGE
-        bmp2 = PhotoHandler.resizeBitmap(bmp2, PipeClass.width, PipeClass.height); //BOTTOM PIPE IMAGE
 
         //initialize all three pipes
-        pipe1 = new PipeClass(bmp, bmp2, screenWidth);
+        pipe1 = new PipeClass(bmp, bmp, screenWidth);
         pipes.add(pipe1);
-        pipe2 = new PipeClass(bmp, bmp2, screenWidth + screenWidth/2);
+        pipe2 = new PipeClass(bmp, bmp, screenWidth + screenWidth/2);
         pipes.add(pipe2);
     }
 
