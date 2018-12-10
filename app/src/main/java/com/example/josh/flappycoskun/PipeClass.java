@@ -4,10 +4,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-import com.example.josh.flappycoskun.GameView;
-
-import static com.example.josh.flappycoskun.GameView.*;
-
 class PipeClass {
 
     private Bitmap image; //top
@@ -29,8 +25,8 @@ class PipeClass {
         canvas.drawBitmap(image2, xPos, yPos + height + gapSpacing, null); //draw the bottom pipe
     }
 
-    public void update(int inGame, double velocity){
-        if(inGame == 1)
+    public void update(boolean inGame, double velocity){
+        if(inGame)
             xPos -= velocity; //move pipes in x-dir with time
     }
     public int getxPos(){
