@@ -7,9 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
@@ -82,7 +80,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         birdy = new Birdy(PhotoHandler.resizeBitmap(b, Birdy.width, Birdy.height));
 
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.greenlinewall);
-        bmp = PhotoHandler.resizeBitmap(bmp, PipeClass.width, PipeClass.height); //TOP PIPE IMAGE
+        bmp = PhotoHandler.resizeBitmap(bmp, PipeClass.width, PipeClass.height); //resize pipe image
 
         //initialize all three pipes
         pipe1 = new PipeClass(bmp, bmp, screenWidth);
@@ -171,15 +169,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
 
     @Override
     public void draw(Canvas canvas){
-        //display game
         super.draw(canvas);
         if(canvas != null){
-            //these 3 lines were an attempt to get the background right. Causes some serious lag though.
-            //Bitmap background = PhotoHandler.decodeResource(getResources(), R.drawable.backgroundone, screenWidth/4, screenHeight/16);
-            //Paint paintb = new Paint();
-            //canvas.drawBitmap(PhotoHandler.resizeBitmap(background, screenWidth*4, screenHeight), 0, 0, paintb);
-            //canvas.drawRGB(red, blue, green);
-            //draw character
             back.draw(canvas);
             birdy.draw(canvas);
             //draw pipes
@@ -187,7 +178,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
                 p.draw(canvas);
         }
         drawScore(canvas, score);
-
         if(!inGame){
             //draw the "tap to begin" prompt
             Paint paint = new Paint();

@@ -7,7 +7,7 @@ import android.graphics.Canvas;
 public class background {
     private Bitmap image; //top
     private int yPos, xPos;
-    public static int height = Resources.getSystem().getDisplayMetrics().heightPixels; //screenheight (for good measure)
+    public static int height = Resources.getSystem().getDisplayMetrics().heightPixels;
     public static int width = Resources.getSystem().getDisplayMetrics().widthPixels * 3;
 
     public background(Bitmap bmp){
@@ -17,12 +17,12 @@ public class background {
     }
 
     public void draw(Canvas canvas){
-        canvas.drawBitmap(image, xPos, yPos, null); //draw the top pipe
+        canvas.drawBitmap(image, xPos, yPos, null);
     }
 
     public void update(boolean inGame, double velocity){
         if(inGame)
-            xPos -= velocity; //move pipes in x-dir with time
+            xPos -= velocity;
     }
 
     public int getxPos(){
