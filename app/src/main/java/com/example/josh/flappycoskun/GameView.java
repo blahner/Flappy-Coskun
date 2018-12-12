@@ -84,7 +84,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         Bitmap scene = PhotoHandler.resizeBitmap(tempscene, background.width, background.height);
         back = new background(scene);
         //initializing objects - default bird is red sox
-        if(BirdActivity.menuUsed = false) {
+        if(BirdActivity.menuUsed == false) {
             Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.soxbird);
             birdy = new Birdy(PhotoHandler.resizeBitmap(b, Birdy.width, Birdy.height));
         }else{
