@@ -2,6 +2,7 @@
 package com.example.josh.flappycoskun;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,7 +24,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     private static int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     private static int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     public ArrayList<PipeClass> pipes = new ArrayList<>(2);
-    public int score; //updated every time a pipe travels off-screen
+    public int score, highScore; //score updated every time a pipe travels off-screen
     public boolean inGame = false;
     public int velocity = 12; //speed at which bird moves in x (or, conversely, the speed at which background moves toward bird)
     //initialize background colors
@@ -31,6 +32,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
     int green = 0;
     int blue = 0;
     int counter = 0;
+    SharedPreferences prefs;
+    SharedPreferences.Editor editor;
+
     public GameView(Context context){
         super(context);
 
@@ -39,6 +43,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         thread = new com.example.josh.flappycoskun.MainThread(getHolder(), this);
 
         setFocusable(true);
+
+        prefs = context.getSharedPreferences("myPrefsKey", Context.MODE_PRIVATE);
+        editor = prefs.edit();
+        highScore = prefs.getInt("highScore", 0);
     }
 
     @Override
@@ -117,13 +125,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             back.setxPos(0);
         }
     }
-
     public void logic(){
         //has character hit top or bottom of screen?
         if(birdy.y < 0) {
+            storeScore();
             resetLevel();
         }
         if(birdy.y > screenHeight){
+            storeScore();
             resetLevel();
         }
 
@@ -131,9 +140,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             if( (birdy.x > p.getxPos() && birdy.x < p.getxPos() + PipeClass.width) || (birdy.x + Birdy.width > p.getxPos() && birdy.x + Birdy.width < p.getxPos() + PipeClass.width)) {
                 if (birdy.y < p.getyPos() + PipeClass.height) {
                     //colliding with top pipe
+                    storeScore();
                     resetLevel();
                 }
                 if (birdy.y + Birdy.height > p.getyPos() + PipeClass.height + PipeClass.gapSpacing) {   //colliding with bottom pipe
+                    storeScore();
                     resetLevel();
                 }
             }
@@ -147,8 +158,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
+    private void storeScore(){
+        if(score > prefs.getInt("highScore", 0)) {
+            editor.putInt("highScore", score);
+            editor.apply(); //if doesn't work, try editor.commit() instead.
+        }
+    }
+    private int loadScore(){ return prefs.getInt("highScore", 0); }
+
     public void resetLevel(){
         score = 0;
+        highScore = loadScore();
         back.setxPos(0);
         inGame = false;
 
@@ -177,7 +197,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
             for(PipeClass p : pipes)
                 p.draw(canvas);
         }
-        drawScore(canvas, score);
+        drawScores(canvas);
         if(!inGame){
             //draw the "tap to begin" prompt
             Paint paint = new Paint();
@@ -187,11 +207,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback{
         }
     }
 
-    public void drawScore(Canvas canvas, int num){
+    public void drawScores(Canvas canvas){
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
         paint.setTextSize(100);
-        canvas.drawText(Integer.toString(num), screenWidth/2 - 50, 100, paint);
+        canvas.drawText(Integer.toString(score), 0, 100, paint);
+        String highScoreString = "High Score: ";
+        highScoreString = highScoreString.concat(Integer.toString(highScore));
+        canvas.drawText(highScoreString, screenWidth - paint.measureText(highScoreString), 100, paint);
     }
 
 
